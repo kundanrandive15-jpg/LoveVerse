@@ -1,6 +1,44 @@
+
 import 'package:flutter/material.dart';
 
-void main() => runApp(const LoveVerseApp());
+void main() {
+  runApp(const LoveVerseApp());
+}
+
+class Story {
+  final String title;
+  final String description;
+  final String category;
+  final String emoji;
+
+  const Story({
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.emoji,
+  });
+}
+
+const List<Story> stories = [
+  Story(
+    title: 'My Childhood Love',
+    description: 'A childhood friendship that may become something more.',
+    category: 'College Romance',
+    emoji: '💗',
+  ),
+  Story(
+    title: 'The Billionaire’s Daughter',
+    description: 'An unexpected meeting with a wealthy businesswoman’s daughter.',
+    category: 'Rich Lifestyle',
+    emoji: '✨',
+  ),
+  Story(
+    title: 'A Second Chance',
+    description: 'Two former lovers become neighbours again after two years.',
+    category: 'Emotional Romance',
+    emoji: '🌙',
+  ),
+];
 
 class LoveVerseApp extends StatefulWidget {
   const LoveVerseApp({super.key});
@@ -10,306 +48,475 @@ class LoveVerseApp extends StatefulWidget {
 }
 
 class _LoveVerseAppState extends State<LoveVerseApp> {
-  String userName = 'You';
-  String language = 'हिंदी';
+  ThemeMode themeMode = ThemeMode.light;
+  String language = 'Hinglish';
+
+  void changeTheme(bool dark) {
+    setState(() {
+      themeMode = dark ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  void changeLanguage(String value) {
+    setState(() {
+      language = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'LoveVerse',
+      themeMode: themeMode,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF100D18),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFB77AFF),
-          brightness: Brightness.dark,
-        ),
         useMaterial3: true,
-        fontFamily: 'Roboto',
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: Colors.white,
+        colorScheme: const ColorScheme.light(
+          primary: Colors.black,
+          onPrimary: Colors.white,
+          surface: Colors.white,
+          onSurface: Colors.black,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          centerTitle: true,
+        ),
+        navigationBarTheme: const NavigationBarThemeData(
+          backgroundColor: Colors.white,
+          indicatorColor: Color(0xFFE5E5E5),
+        ),
       ),
-      home: HomeScreen(
-        userName: userName,
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.white,
+          onPrimary: Colors.black,
+          surface: Colors.black,
+          onSurface: Colors.white,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          centerTitle: true,
+        ),
+        navigationBarTheme: const NavigationBarThemeData(
+          backgroundColor: Colors.black,
+          indicatorColor: Color(0xFF333333),
+        ),
+      ),
+      home: AppShell(
+        themeMode: themeMode,
         language: language,
-        onNameChanged: (value) => setState(() => userName = value),
-        onLanguageChanged: (value) => setState(() => language = value),
+        onThemeChanged: changeTheme,
+        onLanguageChanged: changeLanguage,
       ),
     );
   }
 }
 
-class Story {
-  final String title;
-  final String subtitle;
-  final String emoji;
-  final String category;
-  final String opening;
-
-  const Story(this.title, this.subtitle, this.emoji, this.category, this.opening);
-}
-
-const stories = <Story>[
-  Story(
-    'My Childhood Love',
-    'एक जुनी मैत्री… मनात दडलेलं प्रेम',
-    '💗',
-    'College Romance',
-    'कॉलेजचा पहिला दिवस. कॅम्पसच्या गेटजवळ तुला अचानक रुचिका दिसते. ती हसत जवळ येते आणि म्हणते, “अरे! किती दिवसांनी भेटतोयस. आज कॉलेज संपल्यावर कॉफी प्यायला येशील का? मला तुला काहीतरी सांगायचं आहे.”',
-  ),
-  Story(
-    'The Billionaire’s Daughter',
-    'शहरातील सर्वात श्रीमंत घरातील मुलगी',
-    '✨',
-    'Rich Lifestyle',
-    'कॉलेजच्या कॉरिडॉरमध्ये घाईत चालताना तुझी एका मुलीशी धडक होते. तिच्या हातातील पुस्तकं खाली पडतात. ती शांतपणे तुझ्याकडे पाहते. “काही हरकत नाही… पण पुढे जरा लक्ष देऊन चाल.”',
-  ),
-  Story(
-    'A Second Chance',
-    'दोन वर्षांनंतर पुन्हा समोरासमोर',
-    '🌙',
-    'Emotional Romance',
-    'दोन वर्षांपूर्वी वेगळे झालेले तुम्ही दोघे आता एकाच अपार्टमेंटमध्ये शेजारी राहायला आला आहात. लिफ्टचं दार उघडतं… आणि समोर ती उभी असते. काही क्षण दोघेही शांत राहता.',
-  ),
-];
-
-class HomeScreen extends StatelessWidget {
-  final String userName;
+class AppShell extends StatefulWidget {
+  final ThemeMode themeMode;
   final String language;
-  final ValueChanged<String> onNameChanged;
+  final ValueChanged<bool> onThemeChanged;
   final ValueChanged<String> onLanguageChanged;
 
-  const HomeScreen({
+  const AppShell({
     super.key,
-    required this.userName,
+    required this.themeMode,
     required this.language,
-    required this.onNameChanged,
+    required this.onThemeChanged,
     required this.onLanguageChanged,
   });
 
-  void _editName(BuildContext context) {
-    final controller = TextEditingController(text: userName == 'You' ? '' : userName);
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('तुझं नाव'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: 'First name'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final value = controller.text.trim();
-              if (value.isNotEmpty) onNameChanged(value);
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  int selectedIndex = 0;
+  String userName = 'You';
+
+  final List<String> pageTitles = [
+    'LoveVerse',
+    'Search',
+    'Chats',
+    'Profile',
+  ];
+
+  void openPage(Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      HomePage(
+        userName: userName,
+        language: widget.language,
+      ),
+      const SearchPage(),
+      const ChatsPage(),
+      ProfilePage(
+        userName: userName,
+        onNameChanged: (value) {
+          setState(() => userName = value);
+        },
+      ),
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LoveVerse', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
+        title: Text(
+          pageTitles[selectedIndex],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         actions: [
-          PopupMenuButton<String>(
-            initialValue: language,
-            onSelected: onLanguageChanged,
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'हिंदी', child: Text('हिंदी')),
-              PopupMenuItem(value: 'मराठी', child: Text('मराठी')),
-            ],
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Center(child: Text(language, style: const TextStyle(fontWeight: FontWeight.w600))),
-            ),
+          IconButton(
+            tooltip: 'App Comments',
+            icon: const Icon(Icons.forum_outlined),
+            onPressed: () => openPage(const FeedbackPage()),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: const LinearGradient(
-                colors: [Color(0xFF4A235F), Color(0xFF20172F)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('YOUR STORY. YOUR CHOICES.', style: TextStyle(color: Color(0xFFE7C9FF), fontSize: 11, letterSpacing: 1.4)),
-                const SizedBox(height: 10),
-                const Text('Enter a world\nof endless stories.', style: TextStyle(fontSize: 27, height: 1.15, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                Text('Welcome, $userName 👋', style: const TextStyle(color: Colors.white70)),
-                const SizedBox(height: 14),
-                OutlinedButton.icon(
-                  onPressed: () => _editName(context),
-                  icon: const Icon(Icons.edit, size: 16),
-                  label: const Text('Set your first name'),
-                ),
-              ],
-            ),
+      drawer: AppDrawer(
+        themeMode: widget.themeMode,
+        language: widget.language,
+        onThemeChanged: widget.onThemeChanged,
+        onLanguageChanged: widget.onLanguageChanged,
+        onOpen: (page) {
+          Navigator.pop(context);
+          openPage(page);
+        },
+      ),
+      body: IndexedStack(
+        index: selectedIndex,
+        children: pages,
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() => selectedIndex = index);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
           ),
-          const SizedBox(height: 26),
-          const Text('Choose your story', style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 6),
-          const Text('तुझ्या निर्णयांनुसार कथा पुढे जाईल.', style: TextStyle(color: Colors.white60)),
-          const SizedBox(height: 14),
-          ...stories.map((story) => StoryCard(
-                story: story,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => StoryChatScreen(
-                      story: story,
-                      userName: userName,
-                      language: language,
-                    ),
+          NavigationDestination(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'Chats',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AppDrawer extends StatelessWidget {
+  final ValueChanged<Widget> onOpen;
+  final ThemeMode themeMode;
+  final String language;
+  final ValueChanged<bool> onThemeChanged;
+  final ValueChanged<String> onLanguageChanged;
+
+  const AppDrawer({
+    super.key,
+    required this.onOpen,
+    required this.themeMode,
+    required this.language,
+    required this.onThemeChanged,
+    required this.onLanguageChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.black),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  'LoveVerse',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              )),
-          const SizedBox(height: 12),
-          const Center(
-            child: Text(
-              'LOVEVERSE • FIRST PROTOTYPE',
-              style: TextStyle(color: Colors.white38, fontSize: 10, letterSpacing: 1.5),
+              ),
             ),
-          ),
-        ],
+            _item(context, Icons.bookmark_outline, 'Saved Stories'),
+            _item(context, Icons.history, 'Recently Viewed'),
+            _item(
+              context,
+              Icons.language,
+              'Language Settings',
+              page: LanguagePage(
+                language: language,
+                onLanguageChanged: onLanguageChanged,
+              ),
+            ),
+            _item(
+              context,
+              Icons.palette_outlined,
+              'Theme Settings',
+              page: ThemePage(
+                themeMode: themeMode,
+                onThemeChanged: onThemeChanged,
+              ),
+            ),
+            _item(context, Icons.notifications_outlined, 'Notifications'),
+            _item(
+              context,
+              Icons.settings_outlined,
+              'Settings',
+              page: const SettingsPage(),
+            ),
+            _item(context, Icons.security_outlined, 'Privacy & Security'),
+            _item(
+              context,
+              Icons.info_outline,
+              'About LoveVerse',
+              page: const AboutPage(),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _item(
+    BuildContext context,
+    IconData icon,
+    String title, {
+    Widget? page,
+  }) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        if (page != null) {
+          onOpen(page);
+        } else {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$title will be available in a future update.'),
+            ),
+          );
+        }
+      },
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  final String userName;
+  final String language;
+
+  const HomePage({
+    super.key,
+    required this.userName,
+    required this.language,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(18),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'YOUR STORY. YOUR CHOICES.',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Enter a world\nof endless stories.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Welcome, $userName 👋',
+                style: const TextStyle(color: Colors.white70),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 26),
+        const Text(
+          'Choose Your Story',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Your choices shape every moment.',
+          style: TextStyle(color: Colors.grey),
+        ),
+        const SizedBox(height: 16),
+        ...stories.map(
+          (story) => StoryCard(
+            story: story,
+            language: language,
+          ),
+        ),
+      ],
     );
   }
 }
 
 class StoryCard extends StatelessWidget {
   final Story story;
-  final VoidCallback onTap;
+  final String language;
 
-  const StoryCard({super.key, required this.story, required this.onTap});
+  const StoryCard({
+    super.key,
+    required this.story,
+    required this.language,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Card(
-      color: const Color(0xFF1D1827),
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
+      color: isDark ? const Color(0xFF171717) : Colors.white,
+      elevation: 1,
+      margin: const EdgeInsets.only(bottom: 14),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(17),
+        side: BorderSide(
+          color: isDark ? Colors.white24 : Colors.black12,
+        ),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(14),
+        leading: CircleAvatar(
+          backgroundColor: Colors.grey.withOpacity(0.15),
+          child: Text(
+            story.emoji,
+            style: const TextStyle(fontSize: 23),
+          ),
+        ),
+        title: Text(
+          story.title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 54,
-                height: 54,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF392647),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Text(story.emoji, style: const TextStyle(fontSize: 27)),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(story.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 4),
-                    Text(story.subtitle, style: const TextStyle(color: Colors.white60, fontSize: 12)),
-                    const SizedBox(height: 7),
-                    Text(story.category.toUpperCase(), style: const TextStyle(color: Color(0xFFC99AFF), fontSize: 9, letterSpacing: 1)),
-                  ],
+              Text(story.description),
+              const SizedBox(height: 7),
+              Text(
+                story.category.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 10,
+                  letterSpacing: 1.2,
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.white54),
             ],
           ),
         ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => StoryChatPage(
+                story: story,
+                language: language,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-class ChatLine {
-  final String text;
-  final bool isUser;
-  ChatLine(this.text, this.isUser);
-}
-
-class StoryChatScreen extends StatefulWidget {
+class StoryChatPage extends StatefulWidget {
   final Story story;
-  final String userName;
   final String language;
 
-  const StoryChatScreen({
+  const StoryChatPage({
     super.key,
     required this.story,
-    required this.userName,
     required this.language,
   });
 
   @override
-  State<StoryChatScreen> createState() => _StoryChatScreenState();
+  State<StoryChatPage> createState() => _StoryChatPageState();
 }
 
-class _StoryChatScreenState extends State<StoryChatScreen> {
-  final controller = TextEditingController();
-  final scrollController = ScrollController();
-  late final List<ChatLine> messages;
+class _StoryChatPageState extends State<StoryChatPage> {
+  final TextEditingController controller = TextEditingController();
+  final List<Map<String, String>> messages = [];
 
-  @override
-  void initState() {
-    super.initState();
-    messages = [
-      ChatLine(widget.story.opening.replaceAll('तुला', widget.userName == 'You' ? 'तुला' : widget.userName), false),
-    ];
-  }
-
-  void _send() {
+  void sendMessage() {
     final value = controller.text.trim();
     if (value.isEmpty) return;
+
     setState(() {
-      messages.add(ChatLine(value, true));
-      messages.add(ChatLine(
-        widget.language == 'मराठी'
-            ? 'रुचिका तुझं बोलणं लक्ष देऊन ऐकते. तिच्या चेहऱ्यावर हलकंसं हसू उमटतं. “खरंच? मला तुझ्याशी अजून थोडं बोलायचं आहे…”\n\n(हा डेमो प्रतिसाद आहे. पुढील आवृत्तीत AI तुझ्या उत्तरानुसार कथा तयार करेल.)'
-            : 'रुचिका तुम्हारी बात ध्यान से सुनती है। उसके चेहरे पर हल्की-सी मुस्कान आती है। “सच में? मुझे तुमसे अभी और बातें करनी हैं…”\n\n(यह डेमो जवाब है। अगले संस्करण में AI तुम्हारे जवाब के अनुसार कहानी आगे बढ़ाएगा।',
-        false,
-      ));
+      messages.add({'text': value, 'type': 'user'});
+      messages.add({
+        'text': 'AI connection is not configured yet. This is a demo reply.',
+        'type': 'character',
+      });
     });
+
     controller.clear();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-        );
-      }
-    });
   }
 
   @override
   void dispose() {
     controller.dispose();
-    scrollController.dispose();
     super.dispose();
   }
 
@@ -319,39 +526,67 @@ class _StoryChatScreenState extends State<StoryChatScreen> {
       appBar: AppBar(title: Text(widget.story.title)),
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            color: const Color(0xFF20172F),
-            child: const Text('DEMO STORY • AI CONNECTION NOT ADDED YET', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: Color(0xFFE2C5FF), letterSpacing: 1)),
+          const Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              'Your Choices. Your Journey.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ),
           Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (_, index) {
-                final message = messages[index];
-                return Align(
-                  alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * .82),
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: message.isUser ? const Color(0xFF603C7C) : const Color(0xFF252031),
-                      borderRadius: BorderRadius.circular(17),
+            child: messages.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(25),
+                      child: Text(
+                        'Your story opening will be added here.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
-                    child: Text(message.text, style: const TextStyle(height: 1.4)),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(14),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      final isUser = message['type'] == 'user';
+
+                      return Align(
+                        alignment: isUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth:
+                                MediaQuery.of(context).size.width * 0.82,
+                          ),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: isUser
+                                ? Colors.black
+                                : Colors.grey.withOpacity(0.18),
+                            borderRadius: BorderRadius.circular(17),
+                          ),
+                          child: Text(
+                            message['text']!,
+                            style: TextStyle(
+                              color: isUser
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.onSurface,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
           SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
                   Expanded(
@@ -359,22 +594,19 @@ class _StoryChatScreenState extends State<StoryChatScreen> {
                       controller: controller,
                       minLines: 1,
                       maxLines: 4,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _send(),
+                      onSubmitted: (_) => sendMessage(),
                       decoration: InputDecoration(
-                        hintText: widget.language == 'मराठी' ? 'तुझं उत्तर लिही…' : 'अपना जवाब लिखो…',
-                        filled: true,
-                        fillColor: const Color(0xFF252031),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                        hintText: 'Write your response...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   IconButton.filled(
-                    onPressed: _send,
-                    icon: const Icon(Icons.send_rounded),
-                    style: IconButton.styleFrom(backgroundColor: const Color(0xFF9C62D1)),
+                    onPressed: sendMessage,
+                    icon: const Icon(Icons.send),
                   ),
                 ],
               ),
@@ -384,5 +616,404 @@ class _StoryChatScreenState extends State<StoryChatScreen> {
       ),
     );
   }
-}  
+}
+
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
+  @override
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  String searchText = '';
+
+  final List<Map<String, String>> stories = [
+    {
+      'title': 'My Childhood Love',
+      'category': 'Romance',
+      'description': 'A beautiful story of childhood friendship and love.'
+    },
+    {
+      'title': 'College Love',
+      'category': 'College Romance',
+      'description': 'A new beginning, unexpected meetings and feelings.'
+    },
+    {
+      'title': 'Second Chance',
+      'category': 'Romance',
+      'description': 'Two hearts meet again after years apart.'
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final results = stories.where((story) {
+      return story['title']!
+              .toLowerCase()
+              .contains(searchText.toLowerCase()) ||
+          story['category']!
+              .toLowerCase()
+              .contains(searchText.toLowerCase());
+    }).toList();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Search Stories')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              onChanged: (value) {
+                setState(() {
+                  searchText = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Search stories...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: results.isEmpty
+                  ? const Center(child: Text('No stories found'))
+                  : ListView.builder(
+                      itemCount: results.length,
+                      itemBuilder: (context, index) {
+                        final story = results[index];
+                        return Card(
+                          child: ListTile(
+                            leading: const Icon(Icons.favorite_outline),
+                            title: Text(story['title']!),
+                            subtitle: Text(story['description']!),
+                            trailing: const Icon(Icons.arrow_forward_ios),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ChatsPage extends StatelessWidget {
+  const ChatsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Chats')),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.chat_bubble_outline, size: 55),
+            SizedBox(height: 12),
+            Text(
+              'Your conversations will appear here.',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('My Profile')),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: const [
+          CircleAvatar(
+            radius: 45,
+            child: Icon(Icons.person, size: 50),
+          ),
+          SizedBox(height: 16),
+          Center(
+            child: Text(
+              'Welcome to LoveVerse',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(height: 24),
+          ListTile(
+            leading: Icon(Icons.person_outline),
+            title: Text('Personal Information'),
+          ),
+          ListTile(
+            leading: Icon(Icons.bookmark_outline),
+            title: Text('Saved Stories'),
+          ),
+          ListTile(
+            leading: Icon(Icons.history),
+            title: Text('Recently Viewed'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LanguagePage extends StatelessWidget {
+  final String language;
+  final ValueChanged<String> onLanguageChanged;
+
+  const LanguagePage({
+    super.key,
+    required this.language,
+    required this.onLanguageChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Language Settings')),
+      body: ListView(
+        children: [
+          RadioListTile<String>(
+            title: const Text('Hinglish'),
+            subtitle: const Text('Hindi in English letters'),
+            value: 'Hinglish',
+            groupValue: language,
+            onChanged: (value) {
+              if (value != null) onLanguageChanged(value);
+            },
+          ),
+          RadioListTile<String>(
+            title: const Text('Minglish'),
+            subtitle: const Text('Marathi in English letters'),
+            value: 'Minglish',
+            groupValue: language,
+            onChanged: (value) {
+              if (value != null) onLanguageChanged(value);
+            },
+          ),
+          RadioListTile<String>(
+            title: const Text('English'),
+            value: 'English',
+            groupValue: language,
+            onChanged: (value) {
+              if (value != null) onLanguageChanged(value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ThemePage extends StatelessWidget {
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeChanged;
+
+  const ThemePage({
+    super.key,
+    required this.themeMode,
+    required this.onThemeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Theme Settings')),
+      body: Column(
+        children: [
+          RadioListTile<ThemeMode>(
+            title: const Text('Light Mode'),
+            value: ThemeMode.light,
+            groupValue: themeMode,
+            onChanged: (value) {
+              if (value != null) onThemeChanged(value);
+            },
+          ),
+          RadioListTile<ThemeMode>(
+            title: const Text('Dark Mode'),
+            value: ThemeMode.dark,
+            groupValue: themeMode,
+            onChanged: (value) {
+              if (value != null) onThemeChanged(value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: ListView(
+        children: const [
+          ListTile(
+            leading: Icon(Icons.notifications_outlined),
+            title: Text('Notifications'),
+          ),
+          ListTile(
+            leading: Icon(Icons.lock_outline),
+            title: Text('Privacy & Security'),
+          ),
+          ListTile(
+            leading: Icon(Icons.info_outline),
+            title: Text('About LoveVerse'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FeedbackPage extends StatefulWidget {
+  const FeedbackPage({super.key});
+
+  @override
+  State<FeedbackPage> createState() => _FeedbackPageState();
+}
+
+class _FeedbackPageState extends State<FeedbackPage> {
+  final TextEditingController controller = TextEditingController();
+
+  final List<String> comments = [];
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void postComment() {
+    final message = controller.text.trim();
+
+    if (message.isEmpty) return;
+
+    setState(() {
+      comments.insert(0, message);
+      controller.clear();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Feedback added in this demo')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('App Comments & Feedback')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: controller,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'Write your feedback...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: postComment,
+                child: const Text('Post Feedback'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Recent Feedback',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: comments.isEmpty
+                  ? const Center(
+                      child: Text('No feedback yet'),
+                    )
+                  : ListView.builder(
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            leading: const Icon(Icons.person_outline),
+                            title: Text(comments[index]),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('About LoveVerse')),
+      body: const Padding(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.favorite, size: 65),
+            SizedBox(height: 16),
+            Text(
+              'LoveVerse',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Your Choices. Your Journey.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 17),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'LoveVerse is an interactive story experience where every choice shapes your journey.',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            Text('Version 1.0.0'),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
